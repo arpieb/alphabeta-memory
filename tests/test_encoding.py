@@ -153,7 +153,7 @@ def test_value_increase_is_additive_noise_a_max_memory_absorbs():
     enc = JohnsonMobiusEncoder(length=8, offset=0)
     B = enc.fit_transform(X)
     mem = MaxMemory().fit(B)
-    drifted = enc.transform(np.array([[3, 6]]))       # both features +1
+    drifted = enc.transform(np.array([[3, 6]]))  # both features +1
     np.testing.assert_array_equal(enc.inverse_transform(mem.recall(drifted)), [[2, 5]])
 
 
@@ -162,5 +162,5 @@ def test_value_decrease_is_subtractive_noise_a_min_memory_absorbs():
     enc = JohnsonMobiusEncoder(length=8, offset=0)
     B = enc.fit_transform(X)
     mem = MinMemory().fit(B)
-    drifted = enc.transform(np.array([[1, 4]]))       # both features -1
+    drifted = enc.transform(np.array([[1, 4]]))  # both features -1
     np.testing.assert_array_equal(enc.inverse_transform(mem.recall(drifted)), [[2, 5]])

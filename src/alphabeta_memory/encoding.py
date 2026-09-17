@@ -28,7 +28,9 @@ class JohnsonMobiusEncoder:
         ``None``, inferred in :meth:`fit` as the per-feature minimum.
     """
 
-    def __init__(self, length: int | ArrayLike | None = None, offset: int | ArrayLike | None = None) -> None:
+    def __init__(
+        self, length: int | ArrayLike | None = None, offset: int | ArrayLike | None = None
+    ) -> None:
         self._length_arg = length
         self._offset_arg = offset
         self.lengths_: NDArray[np.int64] | None = None
@@ -38,13 +40,17 @@ class JohnsonMobiusEncoder:
         X = self._as_int_matrix(X)
         n_features = X.shape[1]
         self.offsets_ = (
-            X.min(axis=0) if self._offset_arg is None else np.broadcast_to(np.asarray(self._offset_arg, dtype=np.int64), (n_features,)).copy()
+            X.min(axis=0)
+            if self._offset_arg is None
+            else np.broadcast_to(np.asarray(self._offset_arg, dtype=np.int64), (n_features,)).copy()
         )
         shifted = X - self.offsets_
         if self._length_arg is None:
             self.lengths_ = shifted.max(axis=0).astype(np.int64)
         else:
-            self.lengths_ = np.broadcast_to(np.asarray(self._length_arg, dtype=np.int64), (n_features,)).copy()
+            self.lengths_ = np.broadcast_to(
+                np.asarray(self._length_arg, dtype=np.int64), (n_features,)
+            ).copy()
         if (self.lengths_ < 0).any():
             raise ValueError("code lengths must be non-negative")
         return self

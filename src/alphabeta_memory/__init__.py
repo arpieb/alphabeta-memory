@@ -5,4 +5,12 @@ from .memory import AlphaBetaMemory, MaxMemory, MinMemory
 from .operators import alpha, beta
 
 __version__ = "0.1.0"
-__all__ = ["AlphaBetaMemory", "JohnsonMobiusEncoder", "MaxMemory", "MinMemory", "__version__", "alpha", "beta"]
+__all__ = [
+    "AlphaBetaMemory",
+    "JohnsonMobiusEncoder",
+    "MaxMemory",
+    "MinMemory",
+    "__version__",
+    "alpha",
+    "beta",
+]

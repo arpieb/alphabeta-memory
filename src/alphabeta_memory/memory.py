@@ -140,7 +140,9 @@ class AlphaBetaMemory:
             if self._M is None:
                 self._M = block
             else:
-                self._M = np.maximum(self._M, block) if self.kind == "max" else np.minimum(self._M, block)
+                self._M = (
+                    np.maximum(self._M, block) if self.kind == "max" else np.minimum(self._M, block)
+                )
         self._n_patterns += p
         return self
 
@@ -160,15 +162,22 @@ class AlphaBetaMemory:
         for start in range(0, X.shape[0], self.chunk_size):
             xb = X[start : start + self.chunk_size]
             # (chunk, m, n) then reduce over n
-            out[start : start + self.chunk_size] = reduce(beta(M[None, :, :], xb[:, None, :], validate=False), axis=2)
+            out[start : start + self.chunk_size] = reduce(
+                beta(M[None, :, :], xb[:, None, :], validate=False), axis=2
+            )
         return out[0] if single else out
 
     __call__ = recall
 
     # ---------------------------------------------------------------- persist
     def save(self, path: str) -> None:
-        np.savez_compressed(path, M=self.weights, kind=self.kind,
-                            n_patterns=self._n_patterns, auto=bool(self.autoassociative))
+        np.savez_compressed(
+            path,
+            M=self.weights,
+            kind=self.kind,
+            n_patterns=self._n_patterns,
+            auto=bool(self.autoassociative),
+        )
 
     @classmethod
     def load(cls, path: str) -> AlphaBetaMemory:
