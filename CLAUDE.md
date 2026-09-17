@@ -114,6 +114,13 @@ The suite is at 100% line and branch coverage; keep it there when adding code.
   it, so adding, reordering or `-k`-filtering a test silently changes the data.
 - Tests for `max` vs `min` behaviour are parametrized over `KINDS` rather than
   duplicated; anything asserting the asymmetry is the exception and names its kind.
+- **Write every README claim as an `assert`.** `tests/test_readme.py` executes every fenced
+  `python` block in `README.md`, so an example that rots against a code change fails
+  the suite. It cannot check a claim made in prose or in a `# -> like this` comment --
+  it only runs the code and checks its assertions. Both README bugs found so far were
+  unasserted comments, so the convention is what does the work; the test only enforces
+  it. The test runs every block (not just the first), fails loudly if a README edit
+  removes them all, and pads line offsets so a failure points at the real README line.
 - When fixing a bug, verify the new test actually fails with the fix reverted.
   Several branches here are only reachable through argument shapes that are easy to
   miss — `fit()` on a single 1-D pattern went uncovered by the entire original suite.
