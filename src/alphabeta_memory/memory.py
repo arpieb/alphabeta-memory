@@ -114,6 +114,12 @@ class AlphaBetaMemory:
             if Y.shape[0] != X.shape[0]:
                 raise ValueError(f"X has {X.shape[0]} patterns but Y has {Y.shape[0]}")
 
+        if X.shape[0] == 0:
+            # No patterns: a true no-op. Returning early (rather than falling through
+            # an empty chunk loop) keeps the object from being left half-initialised
+            # with _autoassociative set but no weights.
+            return self
+
         if self._autoassociative is None:
             self._autoassociative = auto
         elif self._autoassociative != auto:
@@ -166,8 +172,16 @@ class AlphaBetaMemory:
 
     @classmethod
     def load(cls, path: str) -> AlphaBetaMemory:
+        """Restore a memory from ``save``.
+
+        ``kind`` comes from the file, so this works called on any subclass: the
+        returned object is the class matching the stored kind, not ``cls``.
+        """
         data = np.load(path)
-        mem = cls(kind=str(data["kind"]))
+        kind = str(data["kind"])
+        if kind not in ("max", "min"):
+            raise ValueError(f"file declares unknown kind {kind!r}")
+        mem = _KIND_CLASSES[kind]()
         mem._M = data["M"].astype(np.uint8)
         mem._n_patterns = int(data["n_patterns"])
         mem._autoassociative = bool(data["auto"])
@@ -186,3 +200,7 @@ class MinMemory(AlphaBetaMemory):
 
     def __init__(self, *, chunk_size: int = 256) -> None:
         super().__init__("min", chunk_size=chunk_size)
+
+
+#: Maps a stored ``kind`` back to its convenience subclass; used by ``load``.
+_KIND_CLASSES: dict[str, type[AlphaBetaMemory]] = {"max": MaxMemory, "min": MinMemory}
