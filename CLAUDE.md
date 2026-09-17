@@ -14,8 +14,7 @@ uv run ruff format .         # CI gates on `ruff format --check`; run this befor
 uv build                     # -> dist/*.whl, dist/*.tar.gz
 uv publish                   # needs UV_PUBLISH_TOKEN or --token
 
-# Coverage is not a dev dependency; pull it in per-invocation.
-uv run --with pytest-cov pytest --cov=alphabeta_memory --cov-branch --cov-report=term-missing
+uv run pytest --cov=alphabeta_memory --cov-branch --cov-report=term-missing   # coverage
 ```
 
 ## CI
@@ -29,8 +28,12 @@ uv run --with pytest-cov pytest --cov=alphabeta_memory --cov-branch --cov-report
   declares. Do not assume a change is portable because it passes locally: `tomllib`
   is stdlib only from 3.11, and importing it unconditionally broke collection on 3.10
   while passing everywhere else.
+- **coverage** — the suite again with `--cov`, publishing `htmlcov/` and `coverage.xml`
+  as a `coverage-report` artifact and a table in the job summary. Deliberately *not*
+  gated: there is no `--cov-fail-under`, so a drop is visible but does not block a
+  build. The suite is at 100% today; if you add a gate, that is the number.
 
-Both jobs install with `uv sync --locked`, so the ruff and numpy versions are the ones
+All jobs install with `uv sync --locked`, so every tool version is the one
 pinned in `uv.lock` and CI cannot drift from a local run. A lockfile left stale relative
 to `pyproject.toml` fails the build rather than being silently re-resolved — run
 `uv lock` and commit the result when changing dependencies.

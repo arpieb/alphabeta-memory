@@ -19,7 +19,11 @@ dependencies = ["numpy>=1.24"]
 Homepage = "https://github.com/yourname/alphabeta-memory"
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.5"]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.5",
+]
 
 [build-system]
 requires = ["hatchling"]
