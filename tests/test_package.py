@@ -1,9 +1,15 @@
 import pathlib
 import sys
 
-import tomllib
+import pytest
 
 import alphabeta_memory
+
+# tomllib is stdlib only from 3.11, but the package supports 3.10.
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - only on Python 3.10
+    tomllib = None
 
 
 def test_all_names_are_importable():
@@ -18,6 +24,7 @@ def test_all_is_sorted_and_complete():
     assert alphabeta_memory.__all__ == sorted(alphabeta_memory.__all__)
 
 
+@pytest.mark.skipif(tomllib is None, reason="tomllib requires Python 3.11+")
 def test_version_matches_pyproject():
     """CLAUDE.md requires __version__ and pyproject.toml stay in sync."""
     root = pathlib.Path(__file__).resolve().parent.parent
