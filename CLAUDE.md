@@ -10,12 +10,30 @@ uv run pytest                # full suite (testpaths = tests/)
 uv run pytest tests/test_memory.py::test_partial_fit_matches_fit   # single test
 uv run ruff check .          # lint (line-length 100, target py310)
 uv run ruff check --fix .    # autofix (import sorting is the usual offender)
+uv run ruff format .         # CI gates on `ruff format --check`; run this before pushing
 uv build                     # -> dist/*.whl, dist/*.tar.gz
 uv publish                   # needs UV_PUBLISH_TOKEN or --token
 
 # Coverage is not a dev dependency; pull it in per-invocation.
 uv run --with pytest-cov pytest --cov=alphabeta_memory --cov-branch --cov-report=term-missing
 ```
+
+## CI
+
+`.github/workflows/ci.yml` runs on every push to `main` and every PR:
+
+- **lint** — `ruff check` and `ruff format --check`. The format gate is not advisory;
+  an unformatted file fails the build. Note that ruff also formats Python blocks inside
+  Markdown, so `README.md` and this file are checked too.
+- **test** — `pytest` on Python 3.10 through 3.14, the full range `requires-python`
+  declares. Do not assume a change is portable because it passes locally: `tomllib`
+  is stdlib only from 3.11, and importing it unconditionally broke collection on 3.10
+  while passing everywhere else.
+
+Both jobs install with `uv sync --locked`, so the ruff and numpy versions are the ones
+pinned in `uv.lock` and CI cannot drift from a local run. A lockfile left stale relative
+to `pyproject.toml` fails the build rather than being silently re-resolved — run
+`uv lock` and commit the result when changing dependencies.
 
 ## Architecture
 

@@ -239,9 +239,9 @@ def test_constructor_validation():
 
 def test_fit_input_validation():
     with pytest.raises(ValueError):
-        MaxMemory().fit(np.zeros((2, 3, 4), dtype=np.uint8))       # 3-D
+        MaxMemory().fit(np.zeros((2, 3, 4), dtype=np.uint8))  # 3-D
     with pytest.raises(ValueError):
-        MaxMemory().fit(np.array([[0, 2]]))                        # non-binary
+        MaxMemory().fit(np.array([[0, 2]]))  # non-binary
     with pytest.raises(ValueError):
         MaxMemory().fit(np.zeros((3, 4), np.uint8), np.zeros((2, 4), np.uint8))  # p mismatch
 
@@ -249,15 +249,15 @@ def test_fit_input_validation():
 def test_shape_and_mode_locking():
     mem = MaxMemory().fit(np.zeros((2, 3), dtype=np.uint8))
     with pytest.raises(ValueError):
-        mem.partial_fit(np.zeros((2, 3)), np.zeros((2, 2)))        # auto -> hetero
+        mem.partial_fit(np.zeros((2, 3)), np.zeros((2, 2)))  # auto -> hetero
     with pytest.raises(ValueError):
-        mem.partial_fit(np.zeros((2, 5), dtype=np.uint8))          # width change
+        mem.partial_fit(np.zeros((2, 5), dtype=np.uint8))  # width change
     with pytest.raises(ValueError):
-        mem.recall(np.zeros(4, dtype=np.uint8))                    # wrong input dim
+        mem.recall(np.zeros(4, dtype=np.uint8))  # wrong input dim
 
     hetero = AlphaBetaMemory("max").fit(np.zeros((2, 3), np.uint8), np.zeros((2, 4), np.uint8))
     with pytest.raises(ValueError):
-        hetero.partial_fit(np.zeros((2, 3), dtype=np.uint8))       # hetero -> auto
+        hetero.partial_fit(np.zeros((2, 3), dtype=np.uint8))  # hetero -> auto
 
 
 # ------------------------------------------------------------------ persist
@@ -286,9 +286,9 @@ def test_load_works_called_on_any_subclass(caller, cls, tmp_path):
     path = str(tmp_path / "mem.npz")
     mem.save(path)
 
-    loaded = caller.load(path)          # called on the base class or either subclass
-    assert loaded.kind == mem.kind      # kind comes from the file, not the caller
-    assert type(loaded) is cls          # ...and so does the concrete class
+    loaded = caller.load(path)  # called on the base class or either subclass
+    assert loaded.kind == mem.kind  # kind comes from the file, not the caller
+    assert type(loaded) is cls  # ...and so does the concrete class
     np.testing.assert_array_equal(loaded.weights, mem.weights)
     np.testing.assert_array_equal(loaded.recall(X), X)
 
@@ -305,8 +305,7 @@ def test_save_load_preserves_heteroassociative_flag(tmp_path):
 
 def test_load_rejects_a_file_with_an_unknown_kind(tmp_path):
     path = str(tmp_path / "bad.npz")
-    np.savez_compressed(path, M=np.zeros((2, 2), np.uint8), kind="median",
-                        n_patterns=1, auto=True)
+    np.savez_compressed(path, M=np.zeros((2, 2), np.uint8), kind="median", n_patterns=1, auto=True)
     with pytest.raises(ValueError, match="unknown kind"):
         AlphaBetaMemory.load(path)
 

@@ -18,11 +18,11 @@ from alphabeta_memory import MaxMemory, MinMemory, JohnsonMobiusEncoder
 
 X = np.random.default_rng(0).integers(0, 2, size=(10, 64), dtype=np.uint8)
 
-mem = MaxMemory().fit(X)          # autoassociative; robust to 0->1 noise
-assert (mem.recall(X) == X).all() # perfect recall of the training set
+mem = MaxMemory().fit(X)  # autoassociative; robust to 0->1 noise
+assert (mem.recall(X) == X).all()  # perfect recall of the training set
 
 noisy = X[0] | (np.random.default_rng(1).random(64) < 0.1)
-mem.recall(noisy)                 # -> X[0]
+mem.recall(noisy)  # -> X[0]
 
 # Heteroassociative
 Y = np.eye(10, dtype=np.uint8)
